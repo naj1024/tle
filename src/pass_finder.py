@@ -19,10 +19,10 @@ observer = wgs84.latlon(+51.8, -2.1, elevation_m=100)
 satellite = EarthSatellite(line1, line2, tle_name, ts)
 
 # show how we are configured
+print("Observer :", observer)
 print("Satellite:", satellite)
 print(f"  {line1}")
 print(f"  {line2}")
-print("Observer :", observer)
 
 # get the pass data, horizon to horizon
 t, events = satellite.find_events(observer, t0, t1, altitude_degrees=0.0)
@@ -33,19 +33,27 @@ if len(events) == 0:
 else:
     # event types are 0,1,2
     event_names = 'Rise', 'Peak', 'Set '
+    pass_count = 1
     for ti, event in zip(t, events):
         name = event_names[event]
 
         # get az, el, range and rate at this time
         difference = satellite - observer
         topo_centric = difference.at(ti)
-        el, az, slant_range = topo_centric.altaz()
-        _, _, _, _, _, range_rate = topo_centric.frame_latlon_and_rates(observer)
 
+        # Could use this for just el, az and range
+        # el, az, slant_range = topo_centric.altaz()
+
+        # frame_latlon_and_rates() allows us to calculate doppler as well
+        el, az, slant_range, _, _, range_rate = topo_centric.frame_latlon_and_rates(observer)
+
+        # Calculate doppler in Hz per MHz
         # doppler = f₀ - ((f₀(3e8)/(3e8 + range_rate))
         doppler = 1e6 - ((1e6 * 2.9979246e8) / (2.9979246e8 + 1000 * range_rate.km_per_s))
+
         if event == 0:
-            print()
+            print(f"Pass {pass_count}")
+            pass_count += 1
         print(f"{name}"
               f"\t{ti.utc_strftime('%Y %b %d %H:%M:%S')} UTC"
               f"\tEl {abs(el.degrees):5.2f}"

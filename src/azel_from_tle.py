@@ -16,7 +16,7 @@ location = EarthLocation(lon=-2.1, lat=51.8, height=100.0)
 sat_obs = satellite.SatelliteObserver(location)
 
 # A tle we are interested in
-tle_string='''INTELSAT 10-02          
+tle_string = '''INTELSAT 10-02          
 1 28358U 04022A   24306.13806737  .00000008  00000+0  00000+0 0  9990
 2 28358   0.0040 271.5751 0000423 334.5736 203.5135  1.00271606 74687'''
 
